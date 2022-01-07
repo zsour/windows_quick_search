@@ -1,0 +1,91 @@
+.search-bar-container{
+    width: 100%;
+    height: 60px;
+    position: relative;
+}
+
+#search-bar{
+    width: 100%;
+    height: 60px;
+    font-size: 30px;
+    background-color: rgba(0, 0, 0, 0.75);
+
+    color: white;
+    border: none;
+    padding-left: 20px;
+    padding-right: 60px;
+    display: block;
+    font-family: 'PT Sans', sans-serif;
+    letter-spacing: 1px;
+}
+#search-bar:focus{
+    outline: none;
+    border: none;
+}
+
+
+#search-icon{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+
+    background-image: url('./icons/search.svg');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0;
+}
+
+.search-result-container{
+    width: 100%;
+    min-height: 60px;
+    height: 240px;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: block;
+}
+
+.search-result-alt{
+    width: 100%;
+    height: 60px;
+    position: relative;
+}
+
+.search-result-custom-border{
+    width: 100%;
+    height: 3px;
+
+    overflow: hidden;
+   
+    position: absolute;
+    top: 0px;
+}
+
+.rainbow-animation{
+    position: absolute;
+    top: -100px;
+    left: -500px;
+    width: 1800px;
+    height: 1800px;
+    background-image: conic-gradient(
+        #fd004c,
+        #fe9000,
+        #fff020,
+        #3edf4b,
+        #3363ff,
+        #b102b7,
+        #fd004c
+    );
+    animation: border-animation 5s infinite linear;
+}
+
+@keyframes border-animation{
+    0%{
+        transform: rotate(0deg);
+    }
+
+    100%{
+        transform: rotate(360deg);
+    }
+}
