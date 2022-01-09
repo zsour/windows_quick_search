@@ -11,4 +11,6 @@ temp,
 Tmp,
 Temp,
 Windows,
-$GetCurrent
+$GetCurrent,
+SystemLogs,
+xampp
