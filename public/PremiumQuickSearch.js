@@ -2,12 +2,7 @@ const LocalDataCollector = require('./LocalDataCollector');
 
 class PremiumQuickSearch{
     constructor(){
-        var collector = new LocalDataCollector();
-        this.files = [];
-        var parent = this;
-        collector.fetchData((arr) => {
-            parent.files = arr;
-        });
+   
     }
 
 

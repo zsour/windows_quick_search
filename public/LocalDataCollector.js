@@ -1,28 +1,27 @@
 const { resolve } = require('path');
 const { readdir, readFile, writeFile } = require('fs').promises;
-const QuickSort = require('./QuickSort');
 
 
 
 class LocalDataCollector{
-  getFileName(path){
+  static getFileName(path){
     var tmp = path.split('\\');
     return tmp[tmp.length - 1];
   }
 
-  getDirPriority(path){
+ static getDirPriority(path){
     var tmp = path.split('\\');
     return tmp.length;
   }
 
-  getFileType(path){
-    var tmp = this.getFileName(path).split('.');
+  static getFileType(path){
+    var tmp = LocalDataCollector.getFileName(path).split('.');
     return tmp[tmp.length - 1];
   }
 
-  isDirectory(path){
-    var tmp = this.getFileType(path);
-    if(tmp == this.getFileName(path)){
+  static isDirectory(path){
+    var tmp = LocalDataCollector.getFileType(path);
+    if(tmp == LocalDataCollector.getFileName(path)){
         return true;
     }else{
         return false;
@@ -53,9 +52,9 @@ class LocalDataCollector{
     }
   }
 
-  async fetchData(callback){
+  async fetchData(searchPath, invalidPathsTxt, callback){
 
-    readFile('invalidPaths.txt', 'utf8' , (err, data) => { 
+    readFile(invalidPathsTxt, 'utf8' , (err, data) => { 
       if (err) {
         console.error(err);
         return;
@@ -70,12 +69,12 @@ class LocalDataCollector{
         var arr = [];
         var first = performance.now();
   
-        for await (const f of this.getFiles('C:/Users/', tmp)) {
+        for await (const f of this.getFiles(searchPath, tmp)){
               arr.push({
                 path: f,
-                fileName: this.getFileName(f),
-                dirPriority: this.getDirPriority(f),
-                isDir: this.isDirectory(f)
+                fileName: LocalDataCollector.getFileName(f),
+                dirPriority: LocalDataCollector.getDirPriority(f),
+                isDir: LocalDataCollector.isDirectory(f)
               });
         }
 

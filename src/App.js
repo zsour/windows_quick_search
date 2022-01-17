@@ -26,7 +26,7 @@ class App extends React.Component{
         var screenWidth = screenSize.width;
         var screenHeight = screenSize.height; 
 
-        remote.getCurrentWindow().setPosition(Math.floor(screenWidth/2) - 400, Math.floor(screenHeight/6));
+        remote.getCurrentWindow().setPosition(Math.floor(screenWidth/2) - 300, Math.floor(screenHeight/6));
         remote.getCurrentWindow().close();
     }
 

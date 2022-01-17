@@ -11,11 +11,11 @@ function closeWindow(){
 function createWindow(){
 
     win = new BrowserWindow({
-        width: 800,
+        width: 600,
         height: 60,
         useContentSize: false,
-        x: 2,
-        y: 2,
+        x: 0,
+        y: 0,
         movable: false,
         frame: false,
         resizable: false,
@@ -30,7 +30,7 @@ function createWindow(){
 
     console.log(win);
     
-    win.setMinimumSize(400, 60);
+    win.setMinimumSize(600, 60);
     remote.enable(win.webContents);
     win.webContents.openDevTools({mode: "detach"});
     win.setAlwaysOnTop(true, 'screen');
