@@ -11,7 +11,6 @@ class QuickSort{
     getCompareValueObject(obj){
         if(this.customComparator){
             var tmp = this.customComparator(obj);
-            console.log(obj.Name, tmp);
             return tmp;
         }
 

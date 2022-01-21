@@ -1,12 +1,14 @@
 
+import isWindows from 'cross-env/src/is-windows';
 import React from 'react';
 import ResultAlternative from './ResultAlternative';
 import './SearchBar.css';
 
+const fs = window.require('fs');
 const remote = window.require('@electron/remote');
 const LocalDataCollector = window.require('./public/LocalDataCollector.js');
 const QuickSort = window.require('./public/QuickSort.js');
-
+const childProcess = window.require('child_process');
 
 class SearchBar extends React.Component{
 
@@ -26,7 +28,6 @@ class SearchBar extends React.Component{
         });
 
         window.addEventListener('blur', () => {
-        
             this.setState({searchTerm: ''}, this.resizeBrowserWindow);
             setTimeout(() => {
                 remote.getCurrentWindow().close();
@@ -34,11 +35,24 @@ class SearchBar extends React.Component{
              
         });
 
+        window.addEventListener('keypress', (e) => {
+            if(e.code == "Enter"){
+                if(this.state.numberOfMatches > 0 && this.state.searchIndex != -1){
+                    console.log("Opens");
+                    childProcess.exec('start "" "' + this.state.files[this.state.searchIndex].path + '"');
+                }
+            }
+        });
+
 
         var collector = new LocalDataCollector();
         collector.fetchData('C:/Users/', 'public/invalidPaths.txt', (arr) => {
-            var qs = new QuickSort(arr, "fileName");
-            this.setState({files: qs.sort(0, arr.length - 1)});
+            var qs = new QuickSort(arr, undefined, (obj) => {
+                return obj.fileName.toUpperCase();
+            });
+            this.setState({files: qs.sort(0, arr.length - 1)}, () => {
+                console.log(this.state.files);
+            });
         });
     }
 
@@ -52,7 +66,7 @@ class SearchBar extends React.Component{
         for(var i = 0; i < this.state.files.length; i++){
             var substring = this.searchSubstring(this.state.files[lowIndex + i][objComparator], searchTerm.length);
 
-            if(substring !== searchTerm){
+            if(substring.toLowerCase() !== searchTerm.toLowerCase()){
                 return i + 1;
             }
         }
@@ -60,29 +74,50 @@ class SearchBar extends React.Component{
         return i + 1;
     }
 
-    binarySearch(arr, objComparator, searchTerm){
+    findFirstMatch(middleIndex, objComparator, searchTerm){
+        var i = middleIndex;
+        var substring = this.searchSubstring(this.state.files[i][objComparator], searchTerm.length);
+ 
+        while(searchTerm.toLowerCase() == substring.toLowerCase()){
+            i--;
+            substring = this.searchSubstring(this.state.files[i][objComparator], searchTerm.length);
+        }
+
+        i++;
+
+        return i;
+    }
+
+    binarySearch(arr, objComparator){
         var low = 0;
         var high = arr.length - 1;
         
       
         while(low <= high){
             var middle = Math.floor((low + high) / 2);
-            var substring = this.searchSubstring(arr[middle][objComparator], searchTerm.length);
-            if(substring === searchTerm){
-            
-                console.log(substring);
-                this.setState({numberOfMatches: 1}, () => {
-                    this.resizeBrowserWindow(1);
-                });  
+            var substring = this.searchSubstring(arr[middle][objComparator], this.state.searchTerm.length);
     
-                return middle;
+
+            if(substring.toLowerCase() == this.state.searchTerm.toLowerCase()){
+                
+                var firstMatch = this.findFirstMatch(middle, "fileName", this.state.searchTerm);
+                var numberOfMatches = this.findNumberOfMatches(firstMatch, "fileName", this.state.searchTerm.toLowerCase());
+               
+                if(numberOfMatches != this.state.numberOfMatches){
+                    this.setState({numberOfMatches: numberOfMatches, searchIndex: firstMatch}, () => {
+                        this.resizeBrowserWindow(numberOfMatches);
+                    });  
+                }
+                
+    
+                return firstMatch;
             } 
 
-            if(substring > searchTerm){
+            if(substring.toLowerCase() > this.state.searchTerm.toLowerCase()){
                 high = middle - 1;
             }
 
-            if(substring < searchTerm){
+            if(substring.toLowerCase() < this.state.searchTerm.toLowerCase()){
                 low = middle + 1;
             }
         }
@@ -95,11 +130,17 @@ class SearchBar extends React.Component{
     
         
      
-    resizeBrowserWindow(numberOfMatches){
+    resizeBrowserWindow(numberOfMatches = 0){
         if(numberOfMatches > 0){
-            remote.getCurrentWindow().setMaximumSize(600, 240);
-            remote.getCurrentWindow().setMinimumSize(600, 240);
-            remote.getCurrentWindow().setSize(600, 240);
+            if(numberOfMatches > 4){
+                remote.getCurrentWindow().setMaximumSize(600, 320);
+                remote.getCurrentWindow().setMinimumSize(600, 320);
+                remote.getCurrentWindow().setSize(600, 320);
+            }else{
+                remote.getCurrentWindow().setMaximumSize(600, (numberOfMatches + 1) * 80);
+                remote.getCurrentWindow().setMinimumSize(600, (numberOfMatches + 1) * 80);
+                remote.getCurrentWindow().setSize(600, (numberOfMatches + 1) * 80);
+            }   
         }else{
             remote.getCurrentWindow().setMaximumSize(600, 60);
             remote.getCurrentWindow().setMinimumSize(600, 60);
@@ -111,8 +152,9 @@ class SearchBar extends React.Component{
     onSearchBarInput(event){
         this.setState({searchTerm: event.target.value}, () => {
             if(event.target.value.length > 0 && this.state.files.length > 0){
-                this.setState({searchIndex: this.binarySearch(this.state.files, "fileName", event.target.value)});
+                this.setState({searchIndex: this.binarySearch(this.state.files, "fileName", this.state.searchTerm)});
             }else{
+                this.setState({searchIndex: '', matchFound: false, numberOfMatches: 0, searchIndex: -1});
                 this.resizeBrowserWindow(0);
             }
         });
@@ -124,11 +166,26 @@ class SearchBar extends React.Component{
             return <div className='search-result-container' id="result">
 
                 <ResultAlternative  
-                    active={this.state.activeResultAlts[2]} 
+                    active={this.state.activeResultAlts[0]} 
                     fileName={this.state.files[this.state.searchIndex].fileName} 
                     isFolder={LocalDataCollector.isDirectory(this.state.files[this.state.searchIndex].path)}
-                    fileType={LocalDataCollector.getFileType(this.state.files[this.state.searchIndex].path)} />
+                    fileType={LocalDataCollector.getFileType(this.state.files[this.state.searchIndex].path)} 
+                    path={this.state.files[this.state.searchIndex].path}/>
 
+                <ResultAlternative  
+                    active={this.state.activeResultAlts[1]} 
+                    fileName={this.state.files[this.state.searchIndex + 1].fileName} 
+                    isFolder={LocalDataCollector.isDirectory(this.state.files[this.state.searchIndex + 1].path)}
+                    fileType={LocalDataCollector.getFileType(this.state.files[this.state.searchIndex + 1].path)} 
+                    path={this.state.files[this.state.searchIndex].path}/>
+
+
+                <ResultAlternative  
+                    active={this.state.activeResultAlts[2]} 
+                    fileName={this.state.files[this.state.searchIndex + 2].fileName} 
+                    isFolder={LocalDataCollector.isDirectory(this.state.files[this.state.searchIndex + 2].path)}
+                    fileType={LocalDataCollector.getFileType(this.state.files[this.state.searchIndex + 2].path)} 
+                    path={this.state.files[this.state.searchIndex].path}/>
             </div>
         }
     }

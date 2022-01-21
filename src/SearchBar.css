@@ -2,6 +2,7 @@
     width: 100%;
     height: 60px;
     position: relative;
+    user-select: none;
 }
 
 #search-bar{
@@ -47,7 +48,7 @@
 
 .search-result-alt{
     width: 100%;
-    height: 60px;
+    height: 80px;
     position: relative;
     line-height: 60px;
 }
@@ -108,6 +109,19 @@
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
+}
+
+.search-result-file-path{
+    position: absolute;
+    display: inline-block;
+    bottom: 5px;
+    left: 24px;
+    font-size: 10px;
+    color: white;
+    font-family: 'PT Sans', sans-serif;
+    height: 20px;
+    line-height: 20px;
+    white-space: nowrap;
 }
 
 .folder{

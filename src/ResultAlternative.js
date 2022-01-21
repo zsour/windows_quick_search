@@ -34,6 +34,10 @@ class ResultAlternative extends React.Component{
                 {this.getIcon()}
                 {this.props.fileName}
             </p>
+
+            <p className="search-result-file-path">
+                 {this.props.path}
+            </p>
         </div>;
     }
 
