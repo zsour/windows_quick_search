@@ -132,14 +132,14 @@ class SearchBar extends React.Component{
      
     resizeBrowserWindow(numberOfMatches = 0){
         if(numberOfMatches > 0){
-            if(numberOfMatches > 4){
-                remote.getCurrentWindow().setMaximumSize(600, 320);
-                remote.getCurrentWindow().setMinimumSize(600, 320);
-                remote.getCurrentWindow().setSize(600, 320);
+            if(numberOfMatches > 3){
+                remote.getCurrentWindow().setMaximumSize(600, 380);
+                remote.getCurrentWindow().setMinimumSize(600, 380);
+                remote.getCurrentWindow().setSize(600, 380);
             }else{
-                remote.getCurrentWindow().setMaximumSize(600, (numberOfMatches + 1) * 80);
-                remote.getCurrentWindow().setMinimumSize(600, (numberOfMatches + 1) * 80);
-                remote.getCurrentWindow().setSize(600, (numberOfMatches + 1) * 80);
+                remote.getCurrentWindow().setMaximumSize(600, 60 + (numberOfMatches) * 80);
+                remote.getCurrentWindow().setMinimumSize(600, 60 + (numberOfMatches) * 80);
+                remote.getCurrentWindow().setSize(600, 60 + (numberOfMatches) * 80);
             }   
         }else{
             remote.getCurrentWindow().setMaximumSize(600, 60);
@@ -177,7 +177,7 @@ class SearchBar extends React.Component{
                     fileName={this.state.files[this.state.searchIndex + 1].fileName} 
                     isFolder={LocalDataCollector.isDirectory(this.state.files[this.state.searchIndex + 1].path)}
                     fileType={LocalDataCollector.getFileType(this.state.files[this.state.searchIndex + 1].path)} 
-                    path={this.state.files[this.state.searchIndex].path}/>
+                    path={this.state.files[this.state.searchIndex + 1].path}/>
 
 
                 <ResultAlternative  
@@ -185,7 +185,14 @@ class SearchBar extends React.Component{
                     fileName={this.state.files[this.state.searchIndex + 2].fileName} 
                     isFolder={LocalDataCollector.isDirectory(this.state.files[this.state.searchIndex + 2].path)}
                     fileType={LocalDataCollector.getFileType(this.state.files[this.state.searchIndex + 2].path)} 
-                    path={this.state.files[this.state.searchIndex].path}/>
+                    path={this.state.files[this.state.searchIndex + 2].path}/>
+
+                <ResultAlternative  
+                    active={this.state.activeResultAlts[3]} 
+                    fileName={this.state.files[this.state.searchIndex + 3].fileName} 
+                    isFolder={LocalDataCollector.isDirectory(this.state.files[this.state.searchIndex + 3].path)}
+                    fileType={LocalDataCollector.getFileType(this.state.files[this.state.searchIndex + 3].path)} 
+                    path={this.state.files[this.state.searchIndex + 3].path}/>
             </div>
         }
     }
